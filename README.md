@@ -1,37 +1,22 @@
-# Local AI Chat
+# Abys — Offline AI Chat
 
-A fully offline AI chatbot that runs locally on your Windows machine. Beautiful dark-mode UI with streaming responses.
+A fully offline AI chatbot. Pure HTML/JS/CSS frontend, powered by Ollama running locally.
 
-## Quick Start
+## How to Use
 
-**Option 1 — Double-click the `.exe`:**
-> Run `LocalAIChat.exe`. It opens a terminal that guides you through everything.
-
-**Option 2 — Double-click the `.bat`:**
-> Run `LocalAIChat.bat` directly if you prefer.
-
-Both options will:
-1. Check if Ollama is installed. If not, download and install it automatically.
-2. Start the local AI server.
-3. Download the `llama3` model (first time only, ~4.7 GB).
-4. Open the chat UI in your browser.
+1. **Double-click `Abys.bat`** — starts the AI server and opens the chat in your browser.
+2. **Chat away!** Everything runs on your machine, no internet needed.
+3. **Close the terminal window** when you're done to stop the server.
 
 ## Files
 | File | Purpose |
 |---|---|
-| `LocalAIChat.exe` | Launcher executable (runs the .bat) |
-| `LocalAIChat.bat` | Setup & launch script |
-| `index.html` | Chat UI |
-| `style.css` | UI styling |
+| `Abys.bat` | Starts the server + opens the UI |
+| `index.html` | Chat interface |
+| `style.css` | Styling |
 | `script.js` | Chat logic |
-| `LocalAIChat.cs` | Source code for the .exe |
-
-## How to Compile the .exe (Optional)
-```powershell
-& "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /target:exe /out:LocalAIChat.exe LocalAIChat.cs
-```
 
 ## Requirements
 - Windows 10/11
-- ~8 GB RAM (for llama3)
-- Internet connection (first-time setup only)
+- Ollama (included in `ollama/` folder or installed system-wide)
+- ~2 GB RAM (for TinyLlama)
