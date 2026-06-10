@@ -15,20 +15,19 @@ async function checkConnection() {
     try {
         const response = await fetch('http://127.0.0.1:11434/api/tags');
         if (response.ok) {
-            connectionStatus.textContent = 'Connected (Offline Mode)';
+            connectionStatus.textContent = 'Online — Running Locally';
             connectionStatus.className = 'status online';
             if (!isGenerating) sendButton.disabled = userInput.value.trim() === '';
             return true;
         }
     } catch (error) {
-        connectionStatus.textContent = 'Server not running. Run LocalAIChat.exe';
+        connectionStatus.textContent = 'Offline — Run Abys.bat to start';
         connectionStatus.className = 'status offline';
         sendButton.disabled = true;
     }
     return false;
 }
 
-// Check connection periodically
 setInterval(checkConnection, 5000);
 checkConnection();
 
@@ -51,19 +50,13 @@ userInput.addEventListener('keydown', function(e) {
 function addMessage(content, type) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}-message`;
-    
+
     const contentDiv = document.createElement('div');
     contentDiv.className = 'message-content';
-    
-    let formattedContent = content;
-    if (type === 'ai') {
-        formattedContent = formatMarkdown(content);
-    }
-    
-    contentDiv.innerHTML = formattedContent;
+
+    contentDiv.innerHTML = type === 'ai' ? formatMarkdown(content) : content;
     messageDiv.appendChild(contentDiv);
     chatMessages.appendChild(messageDiv);
-    
     chatMessages.scrollTop = chatMessages.scrollHeight;
     return contentDiv;
 }
@@ -79,17 +72,11 @@ function formatMarkdown(text) {
 
 function showLoading() {
     const messageDiv = document.createElement('div');
-    messageDiv.className = `message ai-message loading-message`;
+    messageDiv.className = 'message ai-message loading-message';
     messageDiv.id = 'loading-indicator';
-    
     const contentDiv = document.createElement('div');
     contentDiv.className = 'message-content';
-    contentDiv.innerHTML = `
-        <div class="loading-dots">
-            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        </div>
-    `;
-    
+    contentDiv.innerHTML = '<div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
     messageDiv.appendChild(contentDiv);
     chatMessages.appendChild(messageDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -102,28 +89,22 @@ function hideLoading() {
 
 chatForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const text = userInput.value.trim();
     if (!text || isGenerating) return;
-    
+
     const isConnected = await checkConnection();
-    if (!isConnected) {
-        alert("The AI server is not running. Please run LocalAIChat.exe first.");
-        return;
-    }
-    
+    if (!isConnected) return;
+
     userInput.value = '';
     userInput.style.height = 'auto';
     sendButton.disabled = true;
     isGenerating = true;
-    
+
     addMessage(text, 'user');
-    
-    // Add user message to history
     chatHistory.push({ role: 'user', content: text });
-    
     showLoading();
-    
+
     try {
         const response = await fetch(OLLAMA_URL, {
             method: 'POST',
@@ -131,45 +112,47 @@ chatForm.addEventListener('submit', async (e) => {
             body: JSON.stringify({
                 model: modelSelect.value,
                 messages: chatHistory,
-                stream: true
+                stream: true,
+                options: {
+                    num_ctx: 1024,
+                    temperature: 0.7
+                }
             })
         });
-        
+
         hideLoading();
-        
-        if (!response.ok) {
-            throw new Error(`Server error: ${response.status}`);
-        }
-        
+        if (!response.ok) throw new Error('Server error: ' + response.status);
+
         const contentDiv = addMessage('', 'ai');
         let aiResponse = '';
-        
         const reader = response.body.getReader();
         const decoder = new TextDecoder('utf-8');
-        
+
         while (true) {
             const { done, value } = await reader.read();
             if (done) break;
-            
+
             const chunk = decoder.decode(value, { stream: true });
-            const lines = chunk.split('\n').filter(line => line.trim() !== '');
-            
+            const lines = chunk.split('\n').filter(l => l.trim() !== '');
+
             for (const line of lines) {
-                const data = JSON.parse(line);
-                if (data.message && data.message.content) {
-                    aiResponse += data.message.content;
-                    contentDiv.innerHTML = formatMarkdown(aiResponse);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
+                try {
+                    const data = JSON.parse(line);
+                    if (data.message && data.message.content) {
+                        aiResponse += data.message.content;
+                        contentDiv.innerHTML = formatMarkdown(aiResponse);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                } catch (parseErr) { /* skip partial JSON */ }
             }
         }
-        
+
         chatHistory.push({ role: 'assistant', content: aiResponse });
-        
+
     } catch (error) {
         hideLoading();
-        addMessage(`Error: ${error.message}. Is the server still running?`, 'system');
-        chatHistory.pop(); // Remove the user message from history if failed
+        addMessage('Error: ' + error.message, 'system');
+        chatHistory.pop();
     } finally {
         isGenerating = false;
         sendButton.disabled = userInput.value.trim() === '';
