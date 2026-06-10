@@ -1,0 +1,9 @@
+# Ignore executables and downloads
+*.exe
+*.zip
+
+# Ignore ollama extraction directory
+ollama/
+
+# Ignore artifacts
+.system_generated/

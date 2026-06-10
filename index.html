@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local AI Chat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="chat-container">
+        <header class="chat-header">
+            <div class="header-content">
+                <h1>Local <span class="gradient-text">AI</span> Chat</h1>
+                <p class="status offline" id="connection-status">Connecting to Ollama...</p>
+            </div>
+            <div class="model-selector">
+                <select id="model-select">
+                    <option value="llama3">Llama 3</option>
+                    <option value="mistral">Mistral</option>
+                </select>
+            </div>
+        </header>
+
+        <div class="chat-messages" id="chat-messages">
+            <!-- Messages will appear here -->
+            <div class="message system-message">
+                <div class="message-content">
+                    <p>Welcome! This chatbot runs entirely offline on your machine.</p>
+                    <p>To use this, make sure the Ollama server is running.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <form id="chat-form">
+                <textarea id="user-input" placeholder="Type a message..." rows="1" autofocus></textarea>
+                <button type="submit" id="send-button" disabled>
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
