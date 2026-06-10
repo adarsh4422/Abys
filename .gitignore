@@ -1,9 +1,10 @@
-# Ignore executables and downloads
-*.exe
-*.zip
-
-# Ignore ollama extraction directory
+# Ignore Ollama engine binaries (too large for GitHub)
 ollama/
 
-# Ignore artifacts
+# Ignore temp downloads
+*.zip
+OllamaSetup.exe
+mistral-chat-server.exe
+
+# System
 .system_generated/
