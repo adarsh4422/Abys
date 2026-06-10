@@ -1,22 +1,28 @@
 # Abys — Offline AI Chat
 
-A fully offline AI chatbot. Pure HTML/JS/CSS frontend, powered by Ollama running locally.
+A fully offline AI chatbot packaged as a single `.exe`. Just double-click and chat.
 
 ## How to Use
 
-1. **Double-click `Abys.bat`** — starts the AI server and opens the chat in your browser.
-2. **Chat away!** Everything runs on your machine, no internet needed.
-3. **Close the terminal window** when you're done to stop the server.
+1. **Double-click `Abys.exe`**
+2. The AI server starts automatically and the chat opens in your browser.
+3. **Abys** sits in your system tray — right-click the tray icon to reopen or exit.
 
-## Files
-| File | Purpose |
-|---|---|
-| `Abys.bat` | Starts the server + opens the UI |
-| `index.html` | Chat interface |
-| `style.css` | Styling |
-| `script.js` | Chat logic |
+## What's Inside
+
+- The entire chat UI (HTML/CSS/JS) is embedded inside the `.exe`
+- Ollama AI engine runs locally from the `ollama/` folder
+- Default model: **TinyLlama** (fast, lightweight)
+- Zero internet required after initial setup
 
 ## Requirements
+
 - Windows 10/11
-- Ollama (included in `ollama/` folder or installed system-wide)
-- ~2 GB RAM (for TinyLlama)
+- `ollama/` folder with `ollama.exe` next to `Abys.exe`
+- ~2 GB RAM
+
+## Build from Source
+
+```powershell
+& "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /target:winexe /r:System.Windows.Forms.dll /r:System.Drawing.dll /out:Abys.exe Abys.cs
+```
